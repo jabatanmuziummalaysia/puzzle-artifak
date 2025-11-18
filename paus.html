@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <title>Perbandingan Saiz Dengan Paus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .controls input[type="number"] {
+      padding: 6px 8px;
+      font-size: 14px;
+      width: 120px;
+    }
+
+    .controls button {
+      padding: 7px 14px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #f2f2f2;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      filter: brightness(0.95);
+    }
+
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .preset-buttons button {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+
+    .result-text {
+      text-align: center;
+      margin-bottom: 16px;
+      min-height: 40px;
+      font-size: 14px;
+    }
+
+    .result-text strong {
+      font-size: 16px;
+    }
+
+    .bars-container {
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+
+    .legend-box.whale {
+      background: #5a8dee;
+    }
+
+    .legend-box.human {
+      background: #4caf50;
+    }
+
+    .scale-wrapper {
+      margin-top: 4px;
+    }
+
+    .scale-label {
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .scale-bar {
+      width: 100%;
+      height: 26px;
+      border-radius: 13px;
+      background: #e0e0e0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-whale,
+    .bar-human {
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      white-space: nowrap;
+      padding: 0 6px;
+    }
+
+    .bar-whale {
+      left: 2px;
+      background: #5a8dee;
+    }
+
+    .bar-human {
+      left: 2px;
+      background: #4caf50;
+      opacity: 0.95;
+    }
+
+    .info-note {
+      margin-top: 10px;
+      font-size: 12px;
+      text-align: center;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      .bar-whale,
+      .bar-human {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Perbandingan Saiz Diri Dengan Paus</h1>
+  <p class="subtitle">Isi tinggi anda, kemudian lihat berapa kali anda muat dalam panjang seekor paus.</p>
+
+  <div class="controls">
+    <label for="heightInput">Tinggi anda (cm):</label>
+    <input id="heightInput" type="number" min="50" max="250" value="150">
+    <button id="kiraBtn">Kira</button>
+  </div>
+
+  <div class="preset-buttons">
+    <span style="font-size: 12px;">Contoh tinggi:</span>
+    <button data-height="120">Kanak-kanak ±120 cm</button>
+    <button data-height="150">Remaja ±150 cm</button>
+    <button data-height="165">Dewasa ±165 cm</button>
+    <button data-height="180">Tinggi ±180 cm</button>
+  </div>
+
+  <div class="result-text" id="resultText">
+    Masukkan tinggi anda dan tekan "Kira".
+  </div>
+
+  <div class="bars-container">
+    <div class="legend">
+      <span><span class="legend-box whale"></span> Paus</span>
+      <span><span class="legend-box human"></span> Anda</span>
+    </div>
+
+    <div class="scale-wrapper">
+      <div class="scale-label" id="whaleLabel"></div>
+      <div class="scale-bar">
+        <div class="bar-whale" id="barWhale">Paus</div>
+        <div class="bar-human" id="barHuman">Anda</div>
+      </div>
+    </div>
+
+    <div class="info-note">
+      Saiz sebenar paus di muzium boleh diubah dalam tetapan (contoh: 12 m, 14 m). Ini hanyalah visual anggaran.
+    </div>
+  </div>
+
+  <script>
+    // Tetapkan panjang paus di sini (dalam meter)
+    // Contoh: kalau rangka paus di Muzium Marin Labuan panjang lebih kurang 12 meter, tukar kepada 12
+    const whaleLengthMeters = 12;
+
+    const heightInput = document.getElementById('heightInput');
+    const kiraBtn = document.getElementById('kiraBtn');
+    const resultText = document.getElementById('resultText');
+    const whaleLabel = document.getElementById('whaleLabel');
+    const barWhale = document.getElementById('barWhale');
+    const barHuman = document.getElementById('barHuman');
+
+    const presetButtons = document.querySelectorAll('.preset-buttons button');
+
+    function kemasKiniWhaleLabel() {
+      whaleLabel.textContent = 'Paus ini dianggarkan sepanjang ' + whaleLengthMeters + ' meter.';
+    }
+
+    function kira() {
+      const tinggiCm = parseFloat(heightInput.value);
+
+      if (isNaN(tinggiCm) || tinggiCm <= 0) {
+        resultText.innerHTML = '<span style="color:red;">Sila masukkan tinggi yang sah.</span>';
+        return;
+      }
+
+      // Had logik ringkas
+      if (tinggiCm < 60 || tinggiCm > 230) {
+        resultText.innerHTML = '<span style="color:#d98324;">Nilai ini agak luar biasa. Pastikan anda masukkan tinggi dalam sentimeter.</span>';
+      }
+
+      const tinggiMeter = tinggiCm / 100.0;
+      const nisbah = whaleLengthMeters / tinggiMeter;
+
+      const nisbahBulat = Math.round(nisbah * 10) / 10;
+
+      resultText.innerHTML =
+        '<strong>Paus ini kira-kira ' + nisbahBulat + ' kali lebih panjang daripada anda.</strong><br>' +
+        '(Anggaran berdasarkan paus sepanjang ' + whaleLengthMeters + ' m dan tinggi anda ' + tinggiCm + ' cm.)';
+
+      // Visual bar
+      // Paus = 100% lebar, manusia ikut nisbah
+      const whaleWidth = 100; // peratus
+      let humanWidth = (tinggiMeter / whaleLengthMeters) * 100;
+
+      // Pastikan bar manusia tidak hilang terus
+      if (humanWidth < 8) {
+        humanWidth = 8;
+      }
+      if (humanWidth > 100) {
+        humanWidth = 100;
+      }
+
+      barWhale.style.width = whaleWidth + '%';
+      barHuman.style.width = humanWidth + '%';
+
+      barWhale.textContent = 'Paus (' + whaleLengthMeters + ' m)';
+      barHuman.textContent = 'Anda (' + tinggiCm + ' cm)';
+    }
+
+    kiraBtn.addEventListener('click', kira);
+
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const h = btn.getAttribute('data-height');
+        heightInput.value = h;
+        kira();
+      });
+    });
+
+    kemasKiniWhaleLabel();
+    // Boleh auto-kira sekali bila mula
+    kira();
+  </script>
+</body>
+</html>
