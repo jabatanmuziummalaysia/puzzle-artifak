@@ -5,7 +5,7 @@ const cols = 4;
 // Data artifak
 const artifacts = {
   keris: {
-    title: "Keris Tradisional Melayu",
+    title: "Mangkuk Azimat",
     image: "img/keris.jpg",
     description:
       "Mangkuk seramik ini merupakan artifak berinskripsi yang lazim digunakan dalam tradisi perubatan dan perlindungan Islam di Alam Melayu. Pada bahagian dalamnya tertera ayat-ayat doa serta petikan ayat suci yang ditulis secara melingkar, dipercayai berfungsi sebagai pelindung rohani bagi pemiliknya. Di dasar mangkuk terdapat rajah petak berangka yang menyerupai “magic square”, sering dikaitkan dengan kepercayaan terhadap keseimbangan simbolik dan khasiat penyembuhan. Gabungan tulisan khat, angka dan bentuk mangkuk yang berlekuk menunjukkan kepakaran seni tukang seramik pada zamannya. Artifak ini menggambarkan hubungan erat antara kepercayaan spiritual dan kegunaan harian dalam budaya Islam tradisional."
@@ -164,4 +164,5 @@ btnShuffle.addEventListener("click", () => {
 // Run
 initPuzzle();
 shuffleTiles();
+
 
