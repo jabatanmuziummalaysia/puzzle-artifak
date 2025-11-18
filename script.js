@@ -2,16 +2,14 @@
 const rows = 4;
 const cols = 4;
 
-// Data artifak (boleh tambah banyak nanti)
+// Data artifak
 const artifacts = {
   keris: {
     title: "Keris Tradisional Melayu",
     image: "img/keris.jpg",
     description:
       "Keris ini berasal dari koleksi senjata tradisional Melayu. Ia digunakan sebagai simbol status, maruah dan pertahanan diri. Bilahnya bermata dua dengan ukiran halus pada hulu dan sarung."
-  },
-  // Contoh jika tambah artifak lain:
-  // tombak: { ... }
+  }
 };
 
 // Dapatkan ID artifak dari URL (?id=keris), default = 'keris'
@@ -34,16 +32,26 @@ const descEl = document.getElementById("artifact-desc");
 titleEl.textContent = artifact.title;
 descEl.textContent = "Selesaikan puzzle untuk melihat penerangan artifak di sini.";
 
-// State tile
-let tiles = [];          // susunan semasa
-let correctOrder = [];   // susunan betul
+// State global
+let tiles = [];
+let correctOrder = [];
 let firstSelected = null;
+
+// Saiz untuk kira background (akan diisi masa init)
+let boardSize = 320;
+let pieceW = 0;
+let pieceH = 0;
 
 // Inisialisasi puzzle
 function initPuzzle() {
   puzzleBoard.innerHTML = "";
   puzzleBoard.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
   puzzleBoard.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+  // baca lebar board dari CSS (mobile pun ikut)
+  boardSize = puzzleBoard.clientWidth || 320;
+  pieceW = boardSize / cols;
+  pieceH = boardSize / rows;
 
   tiles = [];
   correctOrder = [];
@@ -53,21 +61,21 @@ function initPuzzle() {
     correctOrder.push(i);
   }
 
-  // guna susunan betul sebagai asas
   tiles = [...correctOrder];
 
-  // Bina tile DOM
   tiles.forEach((index) => {
     const tile = document.createElement("div");
     tile.classList.add("puzzle-tile");
 
-    // Koordinat bagi tile betul
+    // index "betul" untuk tile ini
+    tile.dataset.index = index;
+
     const row = Math.floor(index / cols);
     const col = index % cols;
 
-    tile.dataset.index = index; // index "betul"
     tile.style.backgroundImage = `url('${artifact.image}')`;
-    tile.style.backgroundPosition = `${(-col * 100) / (cols - 1)}% ${(-row * 100) / (rows - 1)}%`;
+    tile.style.backgroundSize = `${boardSize}px ${boardSize}px`;
+    tile.style.backgroundPosition = `-${col * pieceW}px -${row * pieceH}px`;
 
     tile.addEventListener("click", () => onTileClick(tile));
 
@@ -77,20 +85,20 @@ function initPuzzle() {
 
 // Shuffle susunan tiles
 function shuffleTiles() {
-  // Fisher-Yates shuffle
+  // Fisher-Yates shuffle atas array index
   for (let i = tiles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
   }
 
-  // Susun semula mengikut array tiles
   const tileNodes = Array.from(puzzleBoard.children);
-  tileNodes.forEach((node, idx) => {
-    const targetIndex = tiles[idx];
-    node.dataset.currentIndex = targetIndex;
+
+  // Set currentIndex untuk setiap tile & update posisi gambar ikut slot
+  tileNodes.forEach((node, slotIdx) => {
+    const targetIndex = tiles[slotIdx];
+    setTileCurrentIndex(node, targetIndex);
   });
 
-  // Reset state
   firstSelected = null;
   statusText.textContent = "Cuba susun puzzle ini sehingga lengkap.";
   descEl.textContent = "Selesaikan puzzle untuk melihat penerangan artifak di sini.";
@@ -102,11 +110,9 @@ function onTileClick(tile) {
     firstSelected = tile;
     tile.style.outline = "3px solid #ff9800";
   } else if (firstSelected === tile) {
-    // klik sama - batal
     firstSelected.style.outline = "none";
     firstSelected = null;
   } else {
-    // swap currentIndex antara 2 tile
     const a = firstSelected;
     const b = tile;
 
@@ -133,10 +139,11 @@ function setTileCurrentIndex(tile, newIndex) {
   const row = Math.floor(newIndex / cols);
   const col = newIndex % cols;
 
-  tile.style.backgroundPosition = `${(-col * 100) / (cols - 1)}% ${(-row * 100) / (rows - 1)}%`;
+  tile.style.backgroundSize = `${boardSize}px ${boardSize}px`;
+  tile.style.backgroundPosition = `-${col * pieceW}px -${row * pieceH}px`;
 }
 
-// Semak sama ada susunan betul
+// Semak sama ada puzzle selesai
 function checkSolved() {
   const tileNodes = Array.from(puzzleBoard.children);
   const currentOrder = tileNodes.map((tile) => getTileCurrentIndex(tile));
