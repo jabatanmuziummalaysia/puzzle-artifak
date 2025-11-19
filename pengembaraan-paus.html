@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <title>Pengembaraan Paus Indian Fin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing:border-box; }
+    body {
+      margin:0; padding:16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e0f4ff 0, #f5f7fb 45%, #eef2f7 100%);
+      color:#123;
+    }
+    .app {
+      max-width:480px;
+      margin:0 auto;
+    }
+    .card {
+      background:#ffffffcc;
+      backdrop-filter: blur(6px);
+      border-radius:16px;
+      padding:16px 16px 20px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+      margin-bottom:16px;
+    }
+    .title-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+    h1 {
+      font-size:1.3rem;
+      margin:0;
+    }
+    .tag {
+      font-size:0.7rem;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#0077b6;
+      color:#fff;
+      white-space:nowrap;
+    }
+    .mode-toggle {
+      font-size:0.75rem;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-top:8px;
+    }
+    .mode-toggle button {
+      border-radius:999px;
+      border:1px solid #0077b6;
+      padding:2px 10px;
+      background:#fff;
+      font-size:0.75rem;
+      cursor:pointer;
+    }
+    .mode-toggle button.active {
+      background:#0077b6;
+      color:#fff;
+    }
+
+    .journey {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:6px;
+      margin-top:10px;
+      font-size:0.7rem;
+      position:relative;
+      padding-top:8px;
+    }
+    .journey::before {
+      content:"";
+      position:absolute;
+      top:20px;
+      left:6%;
+      right:6%;
+      height:3px;
+      background:linear-gradient(90deg,#90caf9,#0077b6);
+      opacity:0.3;
+    }
+    .journey-step {
+      flex:1;
+      text-align:center;
+      position:relative;
+      z-index:1;
+    }
+    .journey-dot {
+      width:16px; height:16px;
+      border-radius:50%;
+      margin:0 auto 4px;
+      border:3px solid #90caf9;
+      background:#fff;
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    }
+    .journey-step.active .journey-dot {
+      background:#0077b6;
+      border-color:#0077b6;
+      transform:scale(1.1);
+    }
+    .journey-label {
+      font-weight:600;
+    }
+    .journey-year {
+      color:#555;
+      font-size:0.65rem;
+    }
+
+    .scene {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .scene-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:6px;
+    }
+    .scene-location {
+      font-weight:700;
+      font-size:1.05rem;
+    }
+    .scene-year {
+      font-size:0.9rem;
+      color:#0077b6;
+      font-weight:600;
+    }
+    .scene-type {
+      font-size:0.75rem;
+      color:#555;
+    }
+    .scene-text {
+      font-size:0.95rem;
+      line-height:1.5;
+    }
+    .scene-text span.highlight {
+      background:#fff7d1;
+      padding:0 3px;
+      border-radius:4px;
+    }
+    .fun-fact {
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      background:#e3f2fd;
+      font-size:0.85rem;
+      border-left:4px solid #0077b6;
+    }
+    .fun-fact-title {
+      font-weight:600;
+      margin-bottom:2px;
+    }
+
+    .nav {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-top:12px;
+    }
+    .nav button {
+      flex:1;
+      padding:10px 0;
+      border-radius:999px;
+      border:none;
+      font-size:0.95rem;
+      cursor:pointer;
+      background:#0077b6;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    .nav button[disabled] {
+      opacity:0.4;
+      cursor:default;
+    }
+    .nav button.secondary {
+      background:#ffffff;
+      color:#0077b6;
+      border:1px solid #0077b6;
+    }
+    .progress-text {
+      text-align:center;
+      font-size:0.8rem;
+      margin-top:6px;
+      color:#555;
+    }
+
+    .hint {
+      font-size:0.8rem;
+      color:#555;
+      margin-top:4px;
+      text-align:center;
+    }
+
+    @media (min-width:768px) {
+      body { padding-top:24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Kad utama & mod -->
+  <div class="card">
+    <div class="title-row">
+      <h1>SEJARAH RANGKA PAUS INDIAN FIN</h1>
+      <!--<span class="tag">Muzium Marin Labuan</span>-->
+    </div>
+    <p style="margin-top:8px;font-size:0.9rem;">
+      Ikuti perjalanan seekor anak paus sepanjang ±42 kaki, dari pantai Melaka sehingga menjadi rangka ikonik di Muzium Marin Labuan.
+    </p>
+    <div class="mode-toggle">
+      <span>Mod bacaan:</span>
+      <button id="modeKids" class="active" type="button">Ringkas</button>
+      <button id="modeDetail" type="button">Terperinci</button>
+    </div>
+  </div>
+
+  <!-- Progress perjalanan -->
+  <div class="card">
+    <div class="journey" id="journeyBar">
+      <!-- diisi oleh JS -->
+    </div>
+    <p class="hint">Tekan “Seterusnya” untuk teruskan bab cerita paus.</p>
+  </div>
+
+  <!-- Scene semasa -->
+  <div class="card">
+    <div class="scene">
+      <div class="scene-header">
+        <div>
+          <div class="scene-location" id="sceneLocation"></div>
+          <div class="scene-type" id="sceneType"></div>
+        </div>
+        <div class="scene-year" id="sceneYear"></div>
+      </div>
+      <div class="scene-text" id="sceneText"></div>
+      <div class="fun-fact" id="sceneFact">
+        <div class="fun-fact-title">Fakta Menarik</div>
+        <div id="sceneFactText"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button id="prevBtn" type="button">
+        ← Sebelum
+      </button>
+      <button id="nextBtn" type="button">
+        Seterusnya →
+      </button>
+    </div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+</div>
+
+<script>
+  // Data kisah paus 1892
+  const scenes = [
+    {
+      id: "melaka",
+      location: "Kampung Sa’batu, Melaka",
+      year: "1892",
+      type: "Bab 1 – Paus Terdampar",
+      textKids:
+        "Seekor anak paus besar kira-kira 42 kaki panjang ditemui terdampar di pantai Kampung Sa’batu, berhampiran Sungai Kesang, Melaka. Orang kampung melihat makhluk laut gergasi ini buat pertama kali.",
+      textDetail:
+        "Pada Jun 1892, seekor anak paus sepanjang kira-kira 42 kaki ditemui terdampar di pantai Kampung Sa’batu berhampiran Sungai Kesang, Melaka. Laporan menyebut paus ini adalah jantan, dan kehadirannya menjadi peristiwa luar biasa bagi penduduk setempat.",
+      fact:
+        "Ada rekod menyatakan paus ini ditemui pada 17 Jun, dan ada juga yang menyebut 19 Jun 1892 – tarikh tepatnya masih menjadi perbincangan.",
+      journeyIndex: 0
+    },
+    {
+      id: "bengkalis",
+      location: "Perairan berhampiran Sungai Kesang",
+      year: "1892",
+      type: "Bab 2 – Dilihat Kapal Bengkalis",
+      textKids:
+        "Tidak lama kemudian, kapal wap British bernama Bengkalis lalu di kawasan itu. Kapten kapal melaporkan mereka melihat seekor paus besar terdampar di pantai.",
+      textDetail:
+        "Berita tentang paus terdampar ini sampai ke Singapura apabila kapal wap British, Bengkalis, melaporkannya pada 25 Jun 1892. Kapten Angus memeriksa paus tersebut dan mengesahkan ia merupakan seekor paus jantan.",
+      fact:
+        "Ada pagar dibina di sekeliling paus. Ada yang kata untuk halang paus berenang semula ketika air pasang, dan ada juga berpendapat ia untuk mengelakkan bangkai hanyut semasa kerja pembersihan.",
+      journeyIndex: 0
+    },
+    {
+      id: "raffles",
+      location: "Muzium Raffles, Singapura",
+      year: "1892–1907",
+      type: "Bab 3 – Dari Pantai ke Muzium",
+      textKids:
+        "Selepas dibersihkan, rangka paus dihantar ke Muzium Raffles di Singapura. Pakar taksidermi di sana memasang rangka dan menjaga tulang-tulangnya.",
+      textDetail:
+        "DPA Harvey, Penasihat Residen di Melaka, mengarahkan rangka paus dibersihkan dan dihantar ke Muzium Raffles, Singapura. Kerja pemuliharaan diketuai Ketua Taksidermi, Valentine Knight. Rangka ini mula dipamerkan di Galeri Zoologi pada tahun 1892, namun ruang yang terhad menyebabkan ia disimpan selama hampir 15 tahun sebelum dipasang dan digantung di laluan muzium pada tahun 1907.",
+      fact:
+        "Beberapa tulang seperti scapula, phalanges, dan sebahagian tulang belakang serta tulang rusuk hilang. Tulang ini diganti semula menggunakan plaster of Paris dan kayu.",
+      journeyIndex: 1
+    },
+    {
+      id: "kl",
+      location: "Muzium Negara, Kuala Lumpur",
+      year: "1974",
+      type: "Bab 4 – Perjalanan ke Kuala Lumpur",
+      textKids:
+        "Pada tahun 1974, galeri sejarah alam semula jadi di Singapura ditutup. Rangka paus diturunkan, dipisahkan kepada beberapa bahagian dan dihantar dengan lori ke Muzium Negara di Kuala Lumpur.",
+      textDetail:
+        "Pada Mei 1974, selepas Muzium Negara Singapura menutup galeri sejarah alam semula jadinya, koleksi tersebut diserahkan kepada Pusat Sains. Rangka paus diturunkan, dibahagikan kepada tiga bahagian, dan dihantar dengan lori sebagai hadiah kepada Muzium Negara di Kuala Lumpur. Sebagai balasan, Malaysia melatih kakitangan teknikal Singapura menghasilkan model dan kasting spesimen pameran.",
+      fact:
+        "Perjalanan rangka paus ini bukan sahaja perpindahan fizikal, tetapi juga simbol kerjasama antara institusi muzium di rantau ini.",
+      journeyIndex: 2
+    },
+    {
+      id: "labuan",
+      location: "Muzium Marin Labuan",
+      year: "2002–Kini",
+      type: "Bab 5 – Rumah Baharu di Labuan",
+      textKids:
+        "Pada tahun 2002, rangka paus dibawa ke Muzium Marin Labuan. Ia mula dipamerkan kepada orang ramai apabila muzium dibuka pada 26 Januari 2003 dan kekal menjadi tarikan utama hingga hari ini.",
+      textDetail:
+        "Rangka paus ini dipindahkan ke Muzium Marin Labuan pada tahun 2002. Ia menjadi salah satu pameran utama sejak muzium ini dibuka kepada orang ramai pada 26 Januari 2003. Pada awalnya ia dikenal pasti sebagai Paus Humpback, tetapi selepas kajian semula, ia ditentukan sebagai Indian Fin Whale (Balaenoptera indica), sinonim kepada Paus Biru.",
+      fact:
+        "Hari ini, rangka ini bukan sahaja menjadi tarikan pelancong, tetapi juga bahan pendidikan penting tentang spesies paus yang jarang direkodkan di perairan Malaysia.",
+      journeyIndex: 3
+    }
+  ];
+
+  const journeyStops = [
+    { label: "Melaka", year: "1892" },
+    { label: "Singapura", year: "1892–1907" },
+    { label: "Kuala Lumpur", year: "1974" },
+    { label: "Labuan", year: "2002–Kini" }
+  ];
+
+  let currentScene = 0;
+  let mode = "kids"; // 'kids' atau 'detail'
+
+  const sceneLocationEl = document.getElementById('sceneLocation');
+  const sceneTypeEl = document.getElementById('sceneType');
+  const sceneYearEl = document.getElementById('sceneYear');
+  const sceneTextEl = document.getElementById('sceneText');
+  const sceneFactTextEl = document.getElementById('sceneFactText');
+  const progressTextEl = document.getElementById('progressText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const journeyBar = document.getElementById('journeyBar');
+  const modeKidsBtn = document.getElementById('modeKids');
+  const modeDetailBtn = document.getElementById('modeDetail');
+
+  function buildJourneyBar() {
+    journeyBar.innerHTML = "";
+    journeyStops.forEach((stop, index) => {
+      const step = document.createElement('div');
+      step.className = 'journey-step';
+      step.dataset.index = index;
+
+      const dot = document.createElement('div');
+      dot.className = 'journey-dot';
+
+      const label = document.createElement('div');
+      label.className = 'journey-label';
+      label.textContent = stop.label;
+
+      const year = document.createElement('div');
+      year.className = 'journey-year';
+      year.textContent = stop.year;
+
+      step.appendChild(dot);
+      step.appendChild(label);
+      step.appendChild(year);
+
+      // lompat bab ikut klik titik
+      step.addEventListener('click', () => {
+        // cari bab pertama yang ada journeyIndex = index
+        const targetIndex = scenes.findIndex(s => s.journeyIndex === index);
+        if (targetIndex !== -1) {
+          currentScene = targetIndex;
+          renderScene();
+        }
+      });
+
+      journeyBar.appendChild(step);
+    });
+  }
+
+  function renderJourneyHighlight() {
+    const activeJourneyIndex = scenes[currentScene].journeyIndex;
+    const steps = journeyBar.querySelectorAll('.journey-step');
+    steps.forEach((s, idx) => {
+      s.classList.toggle('active', idx === activeJourneyIndex);
+    });
+  }
+
+  function renderScene() {
+    const scene = scenes[currentScene];
+
+    sceneLocationEl.textContent = scene.location;
+    sceneTypeEl.textContent = scene.type;
+    sceneYearEl.textContent = scene.year;
+
+    // pilih teks ikut mod
+    const text = mode === 'kids' ? scene.textKids : scene.textDetail;
+    sceneTextEl.textContent = text;
+    sceneFactTextEl.textContent = scene.fact;
+
+    // butang navigasi
+    prevBtn.disabled = currentScene === 0;
+    nextBtn.disabled = currentScene === scenes.length - 1;
+    nextBtn.textContent = (currentScene === scenes.length - 1) ? "Tamat" : "Seterusnya →";
+
+    progressTextEl.textContent =
+      `Bab ${currentScene + 1} daripada ${scenes.length}.`;
+
+    renderJourneyHighlight();
+  }
+
+  // tukar mod bacaan
+  modeKidsBtn.addEventListener('click', () => {
+    mode = 'kids';
+    modeKidsBtn.classList.add('active');
+    modeDetailBtn.classList.remove('active');
+    renderScene();
+  });
+
+  modeDetailBtn.addEventListener('click', () => {
+    mode = 'detail';
+    modeDetailBtn.classList.add('active');
+    modeKidsBtn.classList.remove('active');
+    renderScene();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentScene > 0) {
+      currentScene--;
+      renderScene();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentScene < scenes.length - 1) {
+      currentScene++;
+      renderScene();
+    }
+  });
+
+  // Inisialisasi
+  buildJourneyBar();
+  renderScene();
+</script>
+</body>
+</html>
